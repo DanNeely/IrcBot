@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using IrcDotNet.Samples.Common;
 
-namespace MarkovChainTextBox
+namespace IrcMessageBot
 {
     internal static class Program
     {

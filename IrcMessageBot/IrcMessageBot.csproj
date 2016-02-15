@@ -7,8 +7,8 @@
     <ProjectGuid>{D9E13F5A-921C-4C6C-88B9-C973C39D11F0}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MarkovChainBot</RootNamespace>
-    <AssemblyName>MarkovChainBot</AssemblyName>
+    <RootNamespace>IrcMessageBot</RootNamespace>
+    <AssemblyName>IrcMessageBot</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -64,6 +64,9 @@
       <Project>{bb10eeea-0933-430b-b3a4-7298fb96dba7}</Project>
       <Name>Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
