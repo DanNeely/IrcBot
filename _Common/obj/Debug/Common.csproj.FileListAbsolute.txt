@@ -1,7 +1,0 @@
-C:\Users\DanNeely\documents\visual studio 2015\Projects\bin\Samples\Debug\net40\IrcDotNet.Samples.Common.dll
-C:\Users\DanNeely\documents\visual studio 2015\Projects\bin\Samples\Debug\net40\IrcDotNet.Samples.Common.pdb
-C:\Users\DanNeely\documents\visual studio 2015\Projects\IrcBot\Common\obj\Debug\IrcDotNet.Samples.Common.Properties.Resources.resources
-C:\Users\DanNeely\documents\visual studio 2015\Projects\IrcBot\Common\obj\Debug\Common.csproj.GenerateResource.Cache
-C:\Users\DanNeely\documents\visual studio 2015\Projects\IrcBot\Common\obj\Debug\IrcDotNet.Samples.Common.dll
-C:\Users\DanNeely\documents\visual studio 2015\Projects\IrcBot\Common\obj\Debug\IrcDotNet.Samples.Common.pdb
-C:\Users\DanNeely\Documents\visual studio 2015\Projects\IrcBot\Common\obj\Debug\Common.csprojResolveAssemblyReference.cache

@@ -1,1 +1,0 @@
-C:\Users\DanNeely\documents\visual studio 2015\Projects\bin\Samples\Debug\net40\MarkovChainTextBox.exe.config
