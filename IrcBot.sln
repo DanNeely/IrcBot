@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{BB10EEEA-0933-430B-B3A4-7298FB96DBA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkovChainBot", "MarkovChainBot\MarkovChainBot.csproj", "{D9E13F5A-921C-4C6C-88B9-C973C39D11F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IrcMessageBot", "IrcMessageBot\IrcMessageBot.csproj", "{D9E13F5A-921C-4C6C-88B9-C973C39D11F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

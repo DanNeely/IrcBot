@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("IRC.NET Markov Chain Text Bot ZZZZ")]
+[assembly: AssemblyTitle("IRC.NET Markov Chain Text Bot")]
 [assembly: AssemblyDescription("IRC bot that analyses messages received in channels to build Markov chains and generate random text.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]

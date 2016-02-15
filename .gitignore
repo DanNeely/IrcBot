@@ -47,8 +47,8 @@ Temporary Items
 .apdisk
 Common/obj/
 Common/bin/
-MarkovChainTextBot/obj/
-MarkovChainTextBot/bin/
+IrcMessageBot/obj/
+IrcMessageBot/bin/
 
 *.suo
 packages/
