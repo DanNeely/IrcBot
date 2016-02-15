@@ -1,0 +1,5 @@
+C:\Users\DanNeely\Documents\Visual Studio 2015\Projects\IrcBot\bin\Debug\ConsoleApplication.exe.config
+C:\Users\DanNeely\Documents\visual studio 2015\Projects\IrcBot\obj\x86\Debug\IrcBot.csprojResolveAssemblyReference.cache
+C:\Users\DanNeely\Documents\visual studio 2015\Projects\IrcBot\obj\x86\Debug\IrcBot.Common.Properties.Resources.resources
+C:\Users\DanNeely\Documents\visual studio 2015\Projects\IrcBot\obj\x86\Debug\IrcBot.MarkovChainTextBot.Properties.Resources.resources
+C:\Users\DanNeely\Documents\visual studio 2015\Projects\IrcBot\obj\x86\Debug\IrcBot.csproj.GenerateResource.Cache

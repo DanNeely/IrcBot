@@ -23,7 +23,7 @@ namespace MarkovChainTextBox
                 Console.WriteLine();
 
                 // Create and run bot.
-                bot = new MarkovChainTextBot();
+                bot = new IrcMessageBot();
                 bot.Run();
             }
 #if !DEBUG
