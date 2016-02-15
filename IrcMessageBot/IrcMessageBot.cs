@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Text.RegularExpressions;
 using IrcDotNet;
 using IrcDotNet.Samples.Common;
 
-namespace MarkovChainTextBox
+namespace IrcMessageBot
 {
     public class IrcMessageBot : BasicIrcBot
     {
@@ -15,11 +16,22 @@ namespace MarkovChainTextBox
 
         // Bot statistics
         private DateTime launchTime;
+        private bool onInitialConnect = false;
 
         public IrcMessageBot()
             : base()
         {
             this.launchTime = DateTime.Now;
+
+
+            string server = System.Configuration.ConfigurationManager.AppSettings["ServerName"].ToString();
+            if (server.Length > 0)
+            {
+                string channelName = System.Configuration.ConfigurationManager.AppSettings["ChannelName"].ToString();
+                onInitialConnect = true;
+                Connect(server, RegistrationInfo);
+            }
+
         }
 
         public override IrcRegistrationInfo RegistrationInfo
@@ -43,6 +55,13 @@ namespace MarkovChainTextBox
         protected override void OnClientConnect(IrcClient client)
         {
             //
+            if (onInitialConnect)
+            {
+                onInitialConnect = false;
+
+                string channelName = System.Configuration.ConfigurationManager.AppSettings["ChannelName"].ToString();
+                client.Channels.Join(channelName);
+            }
         }
 
         protected override void OnClientDisconnect(IrcClient client)
