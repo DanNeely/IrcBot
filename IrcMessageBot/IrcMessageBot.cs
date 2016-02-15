@@ -27,11 +27,10 @@ namespace MarkovChainTextBox
             get
             {
                 return new IrcUserRegistrationInfo()
-                    {
-                    //TODO Move this to a config file
-                        NickName = "YhDotNext",
-                        UserName = "YhDotNext",
-                        RealName = "YhDotNext"
+                {
+                    NickName = System.Configuration.ConfigurationManager.AppSettings["NickName"].ToString(),
+                    UserName = System.Configuration.ConfigurationManager.AppSettings["UserName"].ToString(),
+                    RealName = System.Configuration.ConfigurationManager.AppSettings["RealName"].ToString()
                 };
             }
         }
