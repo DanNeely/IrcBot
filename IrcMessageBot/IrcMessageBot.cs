@@ -72,7 +72,7 @@ namespace IrcMessageBot
 
         protected override void OnLocalUserJoinedChannel(IrcLocalUser localUser, IrcChannelEventArgs e)
         {
-            //
+            DeliverMessages(e.Channel, localUser.NickName);
         }
 
         protected override void OnLocalUserLeftChannel(IrcLocalUser localUser, IrcChannelEventArgs e)
@@ -90,9 +90,14 @@ namespace IrcMessageBot
             //
         }
 
+        /// <summary>
+        /// Responds to a user joining the channel by checking to see if they have any messages to deliver.
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="e"></param>
         protected override void OnChannelUserJoined(IrcChannel channel, IrcChannelUserEventArgs e)
         {
-            //
+            DeliverMessages(channel, e.ChannelUser.User.NickName);
         }
 
         protected override void OnChannelUserLeft(IrcChannel channel, IrcChannelUserEventArgs e)
@@ -105,16 +110,40 @@ namespace IrcMessageBot
             //
         }
 
+        /// <summary>
+        /// Responds to a user talking in the channel by checking to see if they have any messages to deliver.
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="e"></param>
         protected override void OnChannelMessageReceived(IrcChannel channel, IrcMessageEventArgs e)
         {
-            var client = channel.Client;
-
             if (e.Source is IrcUser)
             {
-                //TODO - processing logic here     
-
+                DeliverMessages(channel, e.Source.Name);
             }
         }
+
+        /// <summary>
+        /// Delivers messages to the recipient if they exist.
+        /// </summary>
+        /// <param name="channel">The channel to deliver the message to.</param>
+        /// <param name="recipent">The potential recipent of messages.</param>
+        private void DeliverMessages(IrcChannel channel, string recipent)
+        {
+            IrcClient client = channel.Client;
+
+            //using Messages.ToArray() to have an stable copy for iterating over while modifying the original because you can't easily iterate a collection while modifying it.
+            foreach (TellMessage message in Messages.ToArray())
+            {
+                if (recipent.Equals(message.To, StringComparison.OrdinalIgnoreCase))
+                {
+                    client.LocalUser.SendMessage(channel, $"{recipent}, {message.From} said:  {message.Message} ({message.SentOn.ToString("yyyy/MM/dd HH:mm:ss tt")})");
+                    Messages.Remove(message);
+                }
+            }
+
+        }
+
 
         protected override void InitializeChatCommandProcessors()
         {
