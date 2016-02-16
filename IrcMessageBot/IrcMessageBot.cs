@@ -12,7 +12,7 @@ namespace IrcMessageBot
 {
     public class IrcMessageBot : BasicIrcBot
     {
-        private const string quitMessage = "Andrey Markov, 1856 - 1922";
+        private const string quitMessage = "";
 
         // Bot statistics
         private DateTime launchTime;
@@ -23,13 +23,10 @@ namespace IrcMessageBot
         {
             this.launchTime = DateTime.Now;
 
-
-            string server = System.Configuration.ConfigurationManager.AppSettings["ServerName"].ToString();
-            if (server.Length > 0)
+            if (ConfigSettings.ServerName.Length > 0)
             {
-                string channelName = System.Configuration.ConfigurationManager.AppSettings["ChannelName"].ToString();
                 onInitialConnect = true;
-                Connect(server, RegistrationInfo);
+                Connect(ConfigSettings.ServerName, RegistrationInfo);
             }
 
         }
@@ -40,9 +37,9 @@ namespace IrcMessageBot
             {
                 return new IrcUserRegistrationInfo()
                 {
-                    NickName = System.Configuration.ConfigurationManager.AppSettings["NickName"].ToString(),
-                    UserName = System.Configuration.ConfigurationManager.AppSettings["UserName"].ToString(),
-                    RealName = System.Configuration.ConfigurationManager.AppSettings["RealName"].ToString()
+                    NickName = ConfigSettings.NickName,
+                    UserName = ConfigSettings.UserName,
+                    RealName = ConfigSettings.RealName
                 };
             }
         }
@@ -52,15 +49,12 @@ namespace IrcMessageBot
             get { return quitMessage; }
         }
 
-        protected override void OnClientConnect(IrcClient client)
+        protected override void OnClientConnect(IrcClient client) 
         {
-            //
             if (onInitialConnect)
             {
                 onInitialConnect = false;
-
-                string channelName = System.Configuration.ConfigurationManager.AppSettings["ChannelName"].ToString();
-                client.Channels.Join(channelName);
+                client.Channels.Join(ConfigSettings.ChannelName);
             }
         }
 
