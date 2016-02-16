@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Threading;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using IrcDotNet;
 using IrcDotNet.Samples.Common;
+using Newtonsoft.Json;
 
 namespace IrcMessageBot
 {
@@ -17,14 +15,13 @@ namespace IrcMessageBot
         private List<TellMessage> Messages = new List<TellMessage>();
 
         // Bot statistics
-        private DateTime launchTime;
+        private DateTime launchTime = DateTime.Now;
         private bool onInitialConnect = false;
 
         public IrcMessageBot()
             : base()
         {
-            this.launchTime = DateTime.Now;
-
+            LoadMessages();
             if (ConfigSettings.ServerName.Length > 0)
             {
                 onInitialConnect = true;
@@ -131,6 +128,7 @@ namespace IrcMessageBot
         private void DeliverMessages(IrcChannel channel, string recipent)
         {
             IrcClient client = channel.Client;
+            bool messageDelivered = false;
 
             //using Messages.ToArray() to have an stable copy for iterating over while modifying the original because you can't easily iterate a collection while modifying it.
             foreach (TellMessage message in Messages.ToArray())
@@ -139,9 +137,12 @@ namespace IrcMessageBot
                 {
                     client.LocalUser.SendMessage(channel, $"{recipent}, {message.From} said:  {message.Message} ({message.SentOn.ToString("yyyy/MM/dd HH:mm:ss tt")})");
                     Messages.Remove(message);
+                    messageDelivered = true;
                 }
             }
 
+            if (messageDelivered)
+                SaveMessages();
         }
 
 
@@ -185,6 +186,7 @@ namespace IrcMessageBot
 
                 Messages.Add(message);
                 client.LocalUser.SendMessage(targets, $"Okay, {source.Name}");
+                SaveMessages();
                 return;
             }
             client.LocalUser.SendMessage(targets, "Error:  Syntax must be:  \"!tell Nickname message\"");
@@ -213,5 +215,22 @@ namespace IrcMessageBot
         //
 
         #endregion
+
+        /// <summary>
+        /// Saves !tell messages to a json file.
+        /// </summary>
+        private void SaveMessages()
+        {
+            File.WriteAllText(ConfigSettings.MessageFileName, JsonConvert.SerializeObject(Messages));
+        }
+
+        /// <summary>
+        /// Loads !tell messages from a json file.
+        /// </summary>
+        private void LoadMessages()
+        {
+            if (File.Exists(ConfigSettings.MessageFileName))
+             Messages = JsonConvert.DeserializeObject<List<TellMessage>>(File.ReadAllText(ConfigSettings.MessageFileName));
+        }
     }
 }
