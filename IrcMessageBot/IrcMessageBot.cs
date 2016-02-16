@@ -13,6 +13,8 @@ namespace IrcMessageBot
         private const string quitMessage = "";
 
         private List<TellMessage> Messages = new List<TellMessage>();
+        private Dictionary<string, UserSeenStatus> UsersSeen = new Dictionary<string, UserSeenStatus>();
+
 
         // Bot statistics
         private DateTime launchTime = DateTime.Now;
@@ -22,6 +24,8 @@ namespace IrcMessageBot
             : base()
         {
             LoadMessages();
+            LoadSeen();
+
             if (ConfigSettings.ServerName.Length > 0)
             {
                 onInitialConnect = true;
@@ -95,11 +99,12 @@ namespace IrcMessageBot
         protected override void OnChannelUserJoined(IrcChannel channel, IrcChannelUserEventArgs e)
         {
             DeliverMessages(channel, e.ChannelUser.User.NickName);
+            UpdateSeen(e.ChannelUser.User.NickName, "joining", "");
         }
 
         protected override void OnChannelUserLeft(IrcChannel channel, IrcChannelUserEventArgs e)
         {
-            //
+            UpdateSeen(e.ChannelUser.User.NickName, "parting", e.Comment);
         }
 
         protected override void OnChannelNoticeReceived(IrcChannel channel, IrcMessageEventArgs e)
@@ -117,6 +122,14 @@ namespace IrcMessageBot
             if (e.Source is IrcUser)
             {
                 DeliverMessages(channel, e.Source.Name);
+                //NOTE, the character before action and being trimed at the end of the message is something non-printable that VS refuses to show.
+                if (e.Text.StartsWith("ACTION "))
+                {
+                    string action = e.Text.Remove(0, 8).TrimEnd('');
+                    UpdateSeen(e.Source.Name, "doing", action);
+                }
+                else { UpdateSeen(e.Source.Name, "saying", e.Text); }
+
             }
         }
 
@@ -145,6 +158,21 @@ namespace IrcMessageBot
                 SaveMessages();
         }
 
+        private void UpdateSeen(string nickname, string activityType, string activityText)
+        {
+            if (UsersSeen.ContainsKey(nickname))
+            {
+                UsersSeen[nickname].ActivityText = activityText;
+                UsersSeen[nickname].ActivityType = activityType;
+                UsersSeen[nickname].TimeSeen = DateTime.Now;
+            }
+            else
+            {
+                UsersSeen.Add(nickname, new UserSeenStatus { ActivityText = activityText, ActivityType = activityType, TimeSeen = DateTime.Now });
+            }
+
+            SaveSeen();
+        }
 
         protected override void InitializeChatCommandProcessors()
         {
@@ -160,7 +188,26 @@ namespace IrcMessageBot
         private void ProcessChatCommandSeen(IrcClient client, IIrcMessageSource source,
             IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
         {
-            client.LocalUser.SendMessage(targets, "I see nothing, nothing!");
+            if (source is IrcUser)
+            {
+                if (parameters[0].Equals(source.Name, StringComparison.OrdinalIgnoreCase))
+                {
+                    client.LocalUser.SendMessage(targets, "If you're trying to find yourself, might I suggest long hikes in nature and meditation.");
+                }
+                else if (parameters[0].Equals(ConfigSettings.NickName,StringComparison.OrdinalIgnoreCase))
+                {
+                    client.LocalUser.SendMessage(targets, $"I was last seen being asked a stupid question by {source.Name}.");
+                }
+                else if (UsersSeen.ContainsKey(parameters[0]))
+                {
+                    UserSeenStatus status = UsersSeen[parameters[0]];
+                    client.LocalUser.SendMessage(targets, $"{parameters[0]} was last seen {status.ActivityType} \"{status.ActivityText}\" on {status.TimeSeen.ToString("yyyy/MM/dd HH:mm:ss tt")}");
+                }
+                else
+                {
+                    client.LocalUser.SendMessage(targets, "I see nothing, nothing!");
+                }
+            }
         }
 
         /// <summary>
@@ -231,6 +278,23 @@ namespace IrcMessageBot
         {
             if (File.Exists(ConfigSettings.MessageFileName))
              Messages = JsonConvert.DeserializeObject<List<TellMessage>>(File.ReadAllText(ConfigSettings.MessageFileName));
+        }
+
+        /// <summary>
+        /// Saves !seen messages to a json file.
+        /// </summary>
+        private void SaveSeen()
+        {
+            File.WriteAllText(ConfigSettings.SeenFileName, JsonConvert.SerializeObject(UsersSeen));
+        }
+
+        /// <summary>
+        /// Loads !seen messages from a json file.
+        /// </summary>
+        private void LoadSeen()
+        {
+            if (File.Exists(ConfigSettings.SeenFileName))
+                UsersSeen = JsonConvert.DeserializeObject<Dictionary<string, UserSeenStatus>>(File.ReadAllText(ConfigSettings.SeenFileName));
         }
     }
 }

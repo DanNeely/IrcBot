@@ -13,6 +13,7 @@ namespace IrcMessageBot
         public static string NickName => System.Configuration.ConfigurationManager.AppSettings["NickName"];
         public static string UserName => System.Configuration.ConfigurationManager.AppSettings["UserName"];
         public static string RealName => System.Configuration.ConfigurationManager.AppSettings["RealName"];
-        public static string MessageFileName => System.Configuration.ConfigurationManager.AppSettings["MessageFileName"];        
+        public static string MessageFileName => System.Configuration.ConfigurationManager.AppSettings["MessageFileName"];
+        public static string SeenFileName => System.Configuration.ConfigurationManager.AppSettings["SeenFileName"];
     }
 }
