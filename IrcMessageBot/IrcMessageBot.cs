@@ -13,7 +13,9 @@ namespace IrcMessageBot
     public class IrcMessageBot : BasicIrcBot
     {
         private const string quitMessage = "";
-        
+
+        private List<TellMessage> Messages = new List<TellMessage>();
+
         // Bot statistics
         private DateTime launchTime;
         private bool onInitialConnect = false;
@@ -131,10 +133,32 @@ namespace IrcMessageBot
             client.LocalUser.SendMessage(targets, "I see nothing, nothing!");
         }
 
+        /// <summary>
+        /// Responds to a !tell command by storing the message, or reporting an error if the input isn't valid.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="source"></param>
+        /// <param name="targets"></param>
+        /// <param name="command"></param>
+        /// <param name="parameters"></param>
         private void ProcessChatCommandTell(IrcClient client, IIrcMessageSource source,
             IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
         {
-            client.LocalUser.SendMessage(targets, "Hello world!");
+            if (parameters.Count >= 2)
+            {
+                TellMessage message = new TellMessage
+                {
+                    From = source.Name,
+                    To = parameters[0],
+                    Message = string.Join(" ", parameters.Skip(1)),
+                    SentOn = DateTime.Now
+                };
+
+                Messages.Add(message);
+                client.LocalUser.SendMessage(targets, $"Okay, {source.Name}");
+                return;
+            }
+            client.LocalUser.SendMessage(targets, "Error:  Syntax must be:  \"!tell Nickname message\"");
         }
 
         private void ProcessChatCommandStats(IrcClient client, IIrcMessageSource source,
