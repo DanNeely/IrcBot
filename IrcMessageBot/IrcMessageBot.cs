@@ -73,7 +73,7 @@ namespace IrcMessageBot
 
         protected override void OnLocalUserJoinedChannel(IrcLocalUser localUser, IrcChannelEventArgs e)
         {
-            DeliverMessages(e.Channel, localUser.NickName);
+            //
         }
 
         protected override void OnLocalUserLeftChannel(IrcLocalUser localUser, IrcChannelEventArgs e)
