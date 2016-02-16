@@ -13,7 +13,7 @@ namespace IrcMessageBot
     public class IrcMessageBot : BasicIrcBot
     {
         private const string quitMessage = "";
-
+        
         // Bot statistics
         private DateTime launchTime;
         private bool onInitialConnect = false;
@@ -118,13 +118,20 @@ namespace IrcMessageBot
         {
             base.InitializeChatCommandProcessors();
 
-            this.ChatCommandProcessors.Add("talk", ProcessChatCommandTalk);
+            this.ChatCommandProcessors.Add("seen", ProcessChatCommandSeen);
+            this.ChatCommandProcessors.Add("tell", ProcessChatCommandTell);
             this.ChatCommandProcessors.Add("stats", ProcessChatCommandStats);
         }
 
         #region Chat Command Processors
 
-        private void ProcessChatCommandTalk(IrcClient client, IIrcMessageSource source,
+        private void ProcessChatCommandSeen(IrcClient client, IIrcMessageSource source,
+            IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
+        {
+            client.LocalUser.SendMessage(targets, "I see nothing, nothing!");
+        }
+
+        private void ProcessChatCommandTell(IrcClient client, IIrcMessageSource source,
             IList<IIrcMessageTarget> targets, string command, IList<string> parameters)
         {
             client.LocalUser.SendMessage(targets, "Hello world!");
