@@ -99,12 +99,12 @@ namespace IrcMessageBot
         protected override void OnChannelUserJoined(IrcChannel channel, IrcChannelUserEventArgs e)
         {
             DeliverMessages(channel, e.ChannelUser.User.NickName);
-            UpdateSeen(e.ChannelUser.User.NickName, "joining", "");
+            UpdateSeen(e.ChannelUser.User, UserSeenStatus.ActivityType.Join, "", channel.Name);
         }
 
         protected override void OnChannelUserLeft(IrcChannel channel, IrcChannelUserEventArgs e)
         {
-            UpdateSeen(e.ChannelUser.User.NickName, "parting", e.Comment);
+            UpdateSeen(e.ChannelUser.User, UserSeenStatus.ActivityType.Part, e.Comment, channel.Name);
         }
 
         protected override void OnChannelNoticeReceived(IrcChannel channel, IrcMessageEventArgs e)
@@ -126,9 +126,10 @@ namespace IrcMessageBot
                 if (e.Text.StartsWith("ACTION "))
                 {
                     string action = e.Text.Remove(0, 8).TrimEnd('');
-                    UpdateSeen(e.Source.Name, "doing", action);
+                    UpdateSeen(e.Source as IrcUser, UserSeenStatus.ActivityType.Action, action, channel.Name);
+
                 }
-                else { UpdateSeen(e.Source.Name, "saying", e.Text); }
+                else { UpdateSeen(e.Source as IrcUser, UserSeenStatus.ActivityType.Chat, e.Text, channel.Name); }
 
             }
         }
@@ -158,17 +159,33 @@ namespace IrcMessageBot
                 SaveMessages();
         }
 
-        private void UpdateSeen(string nickname, string activityType, string activityText)
+        private void UpdateSeen(IrcUser ircUser, UserSeenStatus.ActivityType activityType, string activityText, string channel)
         {
-            if (UsersSeen.ContainsKey(nickname))
+            if (UsersSeen.ContainsKey(ircUser.NickName))
             {
-                UsersSeen[nickname].ActivityText = activityText;
-                UsersSeen[nickname].ActivityType = activityType;
-                UsersSeen[nickname].TimeSeen = DateTime.Now;
+                UserSeenStatus userSeenStatus = UsersSeen[ircUser.NickName];
+
+                if (userSeenStatus.SeenEvents.ContainsKey(activityType))
+                {
+                    userSeenStatus.SeenEvents[activityType].ActivityText = activityText;
+                    userSeenStatus.SeenEvents[activityType].TimeSeen = DateTime.Now;
+                    userSeenStatus.SeenEvents[activityType].Channel = channel;
+                }
+                else
+                {
+                    userSeenStatus.SeenEvents.Add(activityType, new Action { ActivityText = activityText, TimeSeen = DateTime.Now, Channel = channel });
+                }
+
+                //update hostmask
+                userSeenStatus.HostMask = $"{ircUser.NickName}!{ircUser.UserName}@{ircUser.HostName}";
+
             }
             else
             {
-                UsersSeen.Add(nickname, new UserSeenStatus { ActivityText = activityText, ActivityType = activityType, TimeSeen = DateTime.Now });
+                UsersSeen.Add(ircUser.NickName, new UserSeenStatus());
+                UserSeenStatus userSeenStatus = UsersSeen[ircUser.NickName];
+                userSeenStatus.HostMask = $"{ircUser.NickName}!{ircUser.UserName}@{ircUser.HostName}";
+                userSeenStatus.SeenEvents.Add(activityType, new Action { ActivityText = activityText, TimeSeen = DateTime.Now, Channel = channel });
             }
 
             SaveSeen();
@@ -201,7 +218,9 @@ namespace IrcMessageBot
                 else if (UsersSeen.ContainsKey(parameters[0]))
                 {
                     UserSeenStatus status = UsersSeen[parameters[0]];
-                    client.LocalUser.SendMessage(targets, $"{parameters[0]} was last seen {status.ActivityType} \"{status.ActivityText}\" on {status.TimeSeen.ToString("yyyy/MM/dd HH:mm:ss tt")}");
+                    var mostRecentEvent = status.SeenEvents.OrderBy(kvp => kvp.Value.TimeSeen).Last();// .Values.Select(kvp => kvp).Max(kvp => kvp.TimeSeen);
+
+                    client.LocalUser.SendMessage(targets, $"{parameters[0]} was last seen in {mostRecentEvent.Value.Channel} {mostRecentEvent.Key.ToFriendlyString()} \"{mostRecentEvent.Value.ActivityText}\" on {mostRecentEvent.Value.TimeSeen.ToString("yyyy/MM/dd HH:mm:ss tt")}");
                 }
                 else
                 {
