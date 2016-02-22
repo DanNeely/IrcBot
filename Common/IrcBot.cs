@@ -220,15 +220,13 @@ namespace IrcDotNet.Samples.Common
                     }
                     catch (InvalidCommandParametersException exInvalidCommandParameters)
                     {
-                        client.LocalUser.SendNotice(defaultReplyTarget,
-                            exInvalidCommandParameters.GetMessage(command));
+                        ConsoleUtilities.WriteError(exInvalidCommandParameters.GetMessage(command));
                     }
                     catch (Exception ex)
                     {
                         if (source is IIrcMessageTarget)
                         {
-                            client.LocalUser.SendNotice(defaultReplyTarget,
-                                "Error processing '{0}' command: {1}", command, ex.Message);
+                            ConsoleUtilities.WriteError("Error processing '{0}' command: {1}", command, ex.Message);
                         }
                     }
                 }, System.Threading.Tasks.TaskCreationOptions.LongRunning);
@@ -237,7 +235,7 @@ namespace IrcDotNet.Samples.Common
             {
                 if (source is IIrcMessageTarget)
                 {
-                    client.LocalUser.SendNotice(defaultReplyTarget, "Command '{0}' not recognized.", command);
+                    ConsoleUtilities.WriteError("Command '{0}' not recognized.", command);
                 }
             }
         }
