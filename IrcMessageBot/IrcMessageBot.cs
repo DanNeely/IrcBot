@@ -220,7 +220,8 @@ namespace IrcMessageBot
                     UserSeenStatus status = UsersSeen[parameters[0]];
                     var mostRecentEvent = status.SeenEvents.OrderBy(kvp => kvp.Value.TimeSeen).Last();// .Values.Select(kvp => kvp).Max(kvp => kvp.TimeSeen);
 
-                    client.LocalUser.SendMessage(targets, $"{parameters[0]} was last seen in {mostRecentEvent.Value.Channel} {mostRecentEvent.Key.ToFriendlyString()} \"{mostRecentEvent.Value.ActivityText}\" on {mostRecentEvent.Value.TimeSeen.ToString("yyyy/MM/dd HH:mm:ss tt")}");
+                    client.LocalUser.SendMessage(targets, $"{parameters[0]} was last seen in {mostRecentEvent.Value.Channel} {mostRecentEvent.Key.ToFriendlyString()}" 
+                        + $" \"{mostRecentEvent.Value.ActivityText}\" on {(DateTime.Now - mostRecentEvent.Value.TimeSeen).ToString("d'd 'h'h 'm'm 's's'")}");
                 }
                 else
                 {
