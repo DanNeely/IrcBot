@@ -221,7 +221,18 @@ namespace IrcMessageBot
                     var mostRecentEvent = status.SeenEvents.OrderBy(kvp => kvp.Value.TimeSeen).Last();// .Values.Select(kvp => kvp).Max(kvp => kvp.TimeSeen);
 
                     client.LocalUser.SendMessage(targets, $"{parameters[0]} was last seen in {mostRecentEvent.Value.Channel} {mostRecentEvent.Key.ToFriendlyString()}" 
-                        + $" \"{mostRecentEvent.Value.ActivityText}\" on {(DateTime.Now - mostRecentEvent.Value.TimeSeen).ToString("d'd 'h'h 'm'm 's's'")}");
+                        + $" \"{mostRecentEvent.Value.ActivityText}\" on {status.GetActivityTimeString(mostRecentEvent.Key)}");
+                }
+                else if (parameters[0].Equals("-l", StringComparison.OrdinalIgnoreCase) && UsersSeen.ContainsKey(parameters[1]))
+                {
+                    UserSeenStatus status = UsersSeen[parameters[1]];
+                    string action_time = status.GetActivityTimeString(UserSeenStatus.ActivityType.Action);
+                    string quit_time = status.GetActivityTimeString(UserSeenStatus.ActivityType.Part);
+                    string join_time = status.GetActivityTimeString(UserSeenStatus.ActivityType.Join);
+                    string nick_time = status.GetActivityTimeString(UserSeenStatus.ActivityType.NicknameChange);
+                    string text_time = status.GetActivityTimeString(UserSeenStatus.ActivityType.Chat);
+
+                    client.LocalUser.SendMessage(targets, $"action_time: {action_time} quit_time: {quit_time} join_time: {join_time} nick_time: {nick_time} text_time: {text_time}");
                 }
                 else
                 {

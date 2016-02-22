@@ -53,6 +53,13 @@ namespace IrcMessageBot
 
         public string HostMask { get; set; }
         public Dictionary<ActivityType, Action> SeenEvents { get; set; }
+
+
+        public string GetActivityTimeString(ActivityType activty)
+        {
+            return SeenEvents.ContainsKey(activty) ? (DateTime.Now - SeenEvents[activty].TimeSeen).ToString("d'd 'h'h 'm'm 's's'") + " ago" : "unknown";
+        }
+
     }
 
     public class Action
