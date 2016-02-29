@@ -18,3 +18,5 @@ TODO
 3) Figure out why I'm getting a crash in the framework when a server restarts.  I can't fake this one by breaking 
 a network connection.  I've got a copy of one of their samples running in a debugger now.  The next server event should
 at least tell me if it's a bug in the IrcDotNet framework; or if I didn't set something up in my coode.
+
+4) Remove residual console commands inherited from the sample bot.
